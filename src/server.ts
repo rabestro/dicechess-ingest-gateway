@@ -47,7 +47,7 @@ async function readBody(req: IncomingMessage, limit: number): Promise<Buffer | n
 	return Buffer.concat(chunks);
 }
 
-const server = http.createServer(async (req, res) => {
+async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
 	const origin = req.headers.origin;
 	const path = new URL(req.url ?? '/', 'http://localhost').pathname;
 
@@ -109,6 +109,26 @@ const server = http.createServer(async (req, res) => {
 			error: timedOut ? 'upstream timeout' : 'upstream unreachable',
 		});
 	}
+}
+
+// Wrap the handler so an unexpected error always yields a clean response (and a log line)
+// instead of dropping the connection — which the edge would surface as an opaque 502.
+const server = http.createServer((req, res) => {
+	handle(req, res).catch((err) => {
+		console.error('[ingest-gateway] request handler crashed:', err);
+		if (!res.headersSent) {
+			json(res, 500, { error: 'internal error' });
+		} else {
+			res.end();
+		}
+	});
+});
+
+process.on('unhandledRejection', (reason) => {
+	console.error('[ingest-gateway] unhandledRejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+	console.error('[ingest-gateway] uncaughtException:', err);
 });
 
 server.listen(config.port, () => {
