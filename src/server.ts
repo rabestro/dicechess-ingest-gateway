@@ -47,7 +47,7 @@ async function readBody(req: IncomingMessage, limit: number): Promise<Buffer | n
 	return Buffer.concat(chunks);
 }
 
-async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
+async function handle(req: IncomingMessage, res: ServerResponse) {
 	const origin = req.headers.origin;
 	const path = new URL(req.url ?? '/', 'http://localhost').pathname;
 
