@@ -1,0 +1,21 @@
+{
+	"name": "dicechess-ingest-gateway",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"description": "Token-holding ingest relay: forwards play-site games to dicechess-analytics with the Bearer token, keeping it out of the browser",
+	"scripts": {
+		"start": "node src/server.ts",
+		"dev": "node --env-file=.env --watch src/server.ts",
+		"typecheck": "tsc --noEmit",
+		"test": "node --test 'src/**/*.test.ts'",
+		"test:coverage": "node --test --experimental-test-coverage 'src/**/*.test.ts'"
+	},
+	"devDependencies": {
+		"@types/node": "^26.0.0",
+		"typescript": "^6.0.3"
+	},
+	"engines": {
+		"node": ">=26"
+	}
+}

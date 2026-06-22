@@ -1,0 +1,29 @@
+ci-cd:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - 'Dockerfile'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'package-lock.json'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+
+testing:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.test.ts'
+
+# Type labels from the branch naming convention
+enhancement:
+  - head-branch: ['^feat/']
+bug:
+  - head-branch: ['^bug/']
+refactoring:
+  - head-branch: ['^refactor/']
