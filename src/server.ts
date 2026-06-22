@@ -85,14 +85,29 @@ const server = http.createServer(async (req, res) => {
 	if (!v.ok) return json(res, 422, { error: v.error });
 
 	try {
-		const r = await forwardGame(config.analyticsBaseUrl, config.ingestToken, payload);
+		const r = await forwardGame(
+			config.analyticsBaseUrl,
+			config.ingestToken,
+			payload,
+			config.upstreamTimeoutMs,
+		);
 		// Pass through the meaningful analytics statuses; collapse anything else (auth/5xx) to 502
 		// so the client treats it as a transient error and retries from its outbox.
+		if (r.status !== 200 && r.status !== 201 && r.status !== 422) {
+			console.error(`[ingest-gateway] analytics returned ${r.status}: ${r.body.slice(0, 200)}`);
+		}
 		const status = r.status === 200 || r.status === 201 || r.status === 422 ? r.status : 502;
 		res.writeHead(status, { 'Content-Type': 'application/json' });
 		return res.end(r.body || JSON.stringify({ upstream_status: r.status }));
-	} catch {
-		return json(res, 502, { error: 'upstream unreachable' });
+	} catch (err) {
+		const timedOut = err instanceof Error && err.name === 'TimeoutError';
+		console.error(
+			`[ingest-gateway] forward to ${config.analyticsBaseUrl} failed: ` +
+				(err instanceof Error ? `${err.name}: ${err.message}` : String(err)),
+		);
+		return json(res, timedOut ? 504 : 502, {
+			error: timedOut ? 'upstream timeout' : 'upstream unreachable',
+		});
 	}
 });
 

@@ -44,6 +44,7 @@ export const config = {
 	/** Only relay games from this source; reject anything else. */
 	expectedSource: (process.env.EXPECTED_SOURCE ?? 'playsite').trim(),
 	maxBodyBytes: intEnv('MAX_BODY_BYTES', 256 * 1024),
+	upstreamTimeoutMs: intEnv('UPSTREAM_TIMEOUT_MS', 10_000),
 	rateLimitMax: intEnv('RATE_LIMIT_MAX', 60),
 	rateLimitWindowMs: intEnv('RATE_LIMIT_WINDOW_MS', 60_000),
 };
