@@ -4,6 +4,15 @@
 	"private": true,
 	"type": "module",
 	"description": "Token-holding ingest relay: forwards play-site games to dicechess-analytics with the Bearer token, keeping it out of the browser",
+	"author": {
+		"name": "Jegors Čemisovs",
+		"url": "https://jc.id.lv"
+	},
+	"license": "AGPL-3.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rabestro/dicechess-ingest-gateway.git"
+	},
 	"scripts": {
 		"start": "node src/server.ts",
 		"dev": "node --env-file=.env --watch src/server.ts",
