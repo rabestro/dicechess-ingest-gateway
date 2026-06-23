@@ -93,10 +93,15 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
 		);
 		// Pass through the meaningful analytics statuses; collapse anything else (auth/5xx) to 502
 		// so the client treats it as a transient error and retries from its outbox.
-		if (r.status !== 200 && r.status !== 201 && r.status !== 422) {
+		// Pass through analytics' meaningful statuses. 400 (malformed/contract-invalid) and 422
+		// (engine-replay reject) are permanent — the client quarantines them. Anything else
+		// (401/5xx) is collapsed to 502 so the client treats it as transient and retries.
+		const passthrough =
+			r.status === 200 || r.status === 201 || r.status === 400 || r.status === 422;
+		if (!passthrough) {
 			console.error(`[ingest-gateway] analytics returned ${r.status}: ${r.body.slice(0, 200)}`);
 		}
-		const status = r.status === 200 || r.status === 201 || r.status === 422 ? r.status : 502;
+		const status = passthrough ? r.status : 502;
 		res.writeHead(status, { 'Content-Type': 'application/json' });
 		return res.end(r.body || JSON.stringify({ upstream_status: r.status }));
 	} catch (err) {
