@@ -14,8 +14,6 @@ updates:
       include: 'scope'
     assignees:
       - 'rabestro'
-    reviewers:
-      - 'rabestro'
     rebase-strategy: 'auto'
 
   - package-ecosystem: 'github-actions'
@@ -31,8 +29,6 @@ updates:
       prefix: 'chore'
     assignees:
       - 'rabestro'
-    reviewers:
-      - 'rabestro'
 
   - package-ecosystem: 'docker'
     directory: '/'
@@ -46,6 +42,4 @@ updates:
     commit-message:
       prefix: 'chore'
     assignees:
-      - 'rabestro'
-    reviewers:
       - 'rabestro'
